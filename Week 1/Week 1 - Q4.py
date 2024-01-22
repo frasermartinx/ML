@@ -80,3 +80,96 @@ plt.ylabel("y")
 plt.title("z=1")
 
 plt.show()
+
+### b) ###
+
+
+def posterior(X,y,alpha,sigma_2):
+    #alpha_2 is the prior variance for the parameter vector
+    mu = np.linalg.inv(X.T @ X + sigma_2/alpha * np.eye(X.shape[1])) @ (X.T @ y)
+    Sigma = sigma_2 * np.linalg.inv(X.T @ X + (sigma_2/alpha) * np.eye(X.shape[1]))
+    return mu, Sigma
+
+alpha = np.arange(0.001, 1.001, 0.001)
+
+sigma_2 = 0.1
+
+t = np.array([posterior(X,y,a,sigma_2)[0] for a in alpha])
+
+color_palette = plt.cm.rainbow(np.linspace(0, 1, 5))
+
+# Plot the first 5 rows of t against alpha
+plt.figure()
+for i in range(5):
+    plt.plot(alpha, t[:, i], color=color_palette[i], linewidth=2)
+plt.xlabel("alpha")
+plt.ylabel("Parameter values")
+plt.xscale("log")
+plt.legend(["a", "b1", "b2", "c1", "c2"], loc="upper right")
+
+# Plot the last 4 rows of t against alpha
+plt.figure()
+for i in range(5, 9):
+    plt.plot(alpha, t[:, i], color=color_palette[i-5], linewidth=2)
+plt.xlabel("alpha")
+plt.ylabel("Parameter values")
+plt.xscale("log")
+plt.legend(["d1", "d2", "e1", "e2"], loc="upper right")
+
+plt.show()
+
+#tends to OLS
+
+#Now for posterior predictive
+
+from scipy.stats import norm
+
+# Define alpha and sigma
+alpha = 1
+sigma = np.sqrt(0.1)
+
+# Calculate muhat and Sigma
+muhat = np.linalg.solve(X.T @ X + np.diag(np.repeat(sigma**2/alpha, X.shape[1])), X.T @ y)
+Sigma = sigma**2 * np.linalg.inv(X.T @ X + (sigma**2/alpha) * np.eye(X.shape[1]))
+# Calculate posterior predictive mean and variance for z=0
+meanpred0 = Xalltest0 @ muhat
+#take the diagonal terms as it is variance
+Varpred0 = np.diag(Xalltest0 @ Sigma @ Xalltest0.T + np.eye(Xalltest0.shape[0]))[:,None]
+
+# Calculate up0 and low0
+gamma = norm.ppf(0.975)
+up0 = meanpred0 + gamma * np.sqrt(Varpred0)
+low0 = meanpred0 - gamma * np.sqrt(Varpred0)
+
+up0 = up0.reshape((140,))
+low0 = low0.reshape((140,))
+
+# Plot meanpred0 with confidence intervals
+plt.figure()
+plt.plot(xtest, meanpred0, color="red")
+plt.fill_between(xtest, low0, up0, color="grey", alpha=0.5)
+plt.scatter(x[z==0], y[z==0])
+plt.xlabel("x")
+plt.ylabel("y")
+plt.title("z=0")
+plt.show()
+# Calculate posterior predictive mean and variance for z=1
+meanpred1 = Xalltest1 @ muhat
+Varpred1 = np.diag(Xalltest1 @ Sigma @ Xalltest1.T + np.diag(np.repeat(sigma**2, Xalltest1.shape[0])))[:,None]
+
+# Calculate up1 and low1
+up1 = meanpred1 + gamma * np.sqrt(Varpred1)
+low1 = meanpred1 - gamma * np.sqrt(Varpred1)
+up1 = up1.reshape((140,))
+low1 = low1.reshape((140,))
+
+# Plot meanpred1 with confidence intervals
+plt.figure()
+plt.plot(xtest, meanpred1, color="red")
+plt.fill_between(xtest, low1, up1, color="grey", alpha=0.5)
+plt.scatter(x[z==1], y[z==1])
+plt.xlabel("x")
+plt.ylabel("y")
+plt.title("z=1")
+
+plt.show()
