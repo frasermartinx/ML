@@ -28,6 +28,7 @@ train, test = train_test_split(iris_final, test_size = 0.3, random_state = 3)
 
 ### c) - LDA ###
 
+
 #for LDA we assume that the class conditional densities are gaussian with different means
 #but the same covariance matrix
 
