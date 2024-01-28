@@ -39,7 +39,8 @@ train_1 = train.loc[train["class"] == 1]
 pi0 = train_0.shape[0]/(train_0.shape[0] + train_1.shape[0])
 pi1 = 1 - pi0
 #as for the mean for each class, we will use the training set and use prior mean
-
+print(pi0)
+print(pi1)
 #find means:
 
 

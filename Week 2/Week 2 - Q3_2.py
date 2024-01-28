@@ -24,6 +24,8 @@ X = X / 255.0
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 
+#IF WE WANT TO DO CUSTOM PENALISATION WE IMPORT LogisticRegressionCV
+
 X_train, X_test, y_train,y_test = train_test_split(X,y,test_size=0.3, random_state=0)
 
 model = LogisticRegression(penalty = "l2", solver = "liblinear").fit(X_train, y_train)
